@@ -83,77 +83,24 @@ const createEmployee = async (req, res) => {
 
 // //Update Bio Data throughout...
 const updateBioData = async (req, res) => {
-  const empTbl = [
-    req.body.emp_id,
-    req.body.first_name,
-    req.body.last_name,
-    req.body.gender,
-    req.body.dob,
-    req.params.emp_id,
-  ]
+  const { first_name, last_name, gender, dob } = req.body
 
   try {
-    if (req.body.emp_id === req.params.emp_id) {
-      await db.query(
-        `
-        UPDATE employee SET emp_id = $1, first_name = $2, last_name = $3, gender = $4, dob = $5
-        WHERE emp_id = $6 returning *
+    await db.query(
+      `
+        UPDATE employee SET first_name = $1, last_name = $2, gender = $3, dob = $4
+        WHERE emp_id = $5
         `,
-        empTbl
-      )
-      const { rows } = await db.query(query)
+      [first_name, last_name, gender, dob, req.params.emp_id]
+    )
+    const { rows } = await db.query(query)
 
-      res.status(200).json({
-        status: "Employee updated successfully",
-        results: rows.length,
-        rows: rows,
-      })
-    } else {
-      const idSearch = await db.query(
-        `
-        Select emp_id from employee where emp_id = $1
-        `,
-        [req.body.emp_id]
-      )
-
-      if (idSearch.rows.length > 0) {
-        res.status(400).json({
-          status:
-            "Employee ID already exists. Add a new Employee ID that does not already exist within table",
-        })
-      } else {
-        await db.query(
-          `
-            UPDATE employee SET
-                "emp_id" = $1,
-                "first_name" = $2,
-                "last_name" = $3,
-                "gender" = $4,
-                "dob" = $5
-            WHERE "emp_id" = $6;
-            `,
-          empTbl
-        )
-
-        await db.query(
-          `
-                    UPDATE salary SET
-                        emp_id = $1
-                    WHERE emp_id = $2
-
-                `,
-          [req.body.emp_id, req.params.emp_id]
-        )
-        const { rows } = await db.query(query)
-
-        res.status(200).json({
-          status: "Employee updated successfully",
-          rows: rows,
-        })
-      }
-    }
+    res.status(200).json({
+      status: "Employee updated successfully",
+      rows: rows,
+    })
   } catch (err) {
-    console.log(err)
+    console.error(err)
   }
 }
 
