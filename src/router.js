@@ -15,7 +15,7 @@ const DEPARTMENT = "/departments"
 router.get(`${EMPLOYEE}/`, getAllEmployees)
 router.post(`${EMPLOYEE}/`, createEmployee)
 router.put(`${EMPLOYEE}/:emp_id`, updateBioData)
-router.put(`${EMPLOYEE}/:emp_id/:from_date`, updateEntry)
+router.put(`${EMPLOYEE}/id`, updateEntry)
 router.delete(`${EMPLOYEE}/:emp_id/:from_date`, deleteEntry)
 
 router.get(`${DEPARTMENT}`, getAllDepartments)

@@ -107,16 +107,8 @@ const updateBioData = async (req, res) => {
 //Update 1 specific employee entry with emp_id and from_date
 const updateEntry = async (req, res) => {
   try {
-    const Tbl = [
-      req.body.salary,
-      req.body.from_date,
-      req.body.to_date,
-      req.body.dept_no,
-      req.body.post,
-      req.body.role,
-      req.params.emp_id,
-      req.params.from_date,
-    ]
+    const { salary, from_date, to_date, dept_no, post, role } = req.body
+    const id = req.params.id
     const updateTbl = await db.query(
       `
             UPDATE salary SET
@@ -126,9 +118,9 @@ const updateEntry = async (req, res) => {
                 dept_no = $4,
                 post = $5,
                 role = $6
-            WHERE emp_id = $7 AND from_date = $8 returning *
+            WHERE id = $7 returning *
         `,
-      Tbl
+      [salary, from_date, to_date, dept_no, post, role, id]
     )
     const { rows } = await db.query(query)
     res.status(200).json({
