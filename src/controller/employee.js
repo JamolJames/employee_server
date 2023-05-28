@@ -88,13 +88,14 @@ const updateBioData = async (req, res) => {
     console.log(req.params.emp_id)
 
     try {
-        await db.query(
+        const change = await db.query(
             `
                 UPDATE employee SET first_name = $1, last_name = $2, gender = $3, dob = $4
-                WHERE emp_id = $5
+                WHERE emp_id = $5 returning *
                 `,
             [first_name, last_name, gender, dob, req.params.emp_id]
         )
+        console.log(change.rows)
         const { rows } = await db.query(query)
 
         res.status(200).json({
@@ -106,11 +107,11 @@ const updateBioData = async (req, res) => {
     }
 }
 
-//Update 1 specific salary entry entry with id
+//Update 1 specific salary entry with id
 const updateEntry = async (req, res) => {
     const { salary, from_date, to_date, dept_no, post, role } = req.body
-    console.log(req.body)
-    console.log(req.params.id)
+    console.log(`Values sent:`, req.body)
+    console.log(`Id:`, req.params.id)
 
     try {
         await db.query(
@@ -138,28 +139,9 @@ const updateEntry = async (req, res) => {
 }
 
 const deleteEntry = async (req, res) => {
+    console.log(req.params.id)
     try {
-        await db.query(
-            `
-                    DELETE FROM salary
-                    WHERE emp_id = $1 AND from_date = $2
-                `,
-            [req.params.emp_id, req.params.from_date]
-        )
-        const idSearch = await db.query(
-            `
-                    SELECT emp_id FROM salary
-                    WHERE emp_id = $1
-                `,
-            [req.params.emp_id]
-        )
-        console.log(idSearch)
-
-        if (idSearch.rows.length === 0) {
-            await db.query(`DELETE FROM employee WHERE emp_id = $1`, [
-                req.params.emp_id,
-            ])
-        }
+        await db.query("DELETE FROM salary WHERE id = $1", [req.params.id])
         const { rows } = await db.query(query)
         res.status(200).json({
             status: "Successfully Deleted",
