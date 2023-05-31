@@ -31,6 +31,7 @@ const getAllEmployees = async (req, res) => {
 }
 
 const createEmployee = async (req, res) => {
+    console.log(req.body)
     const {
         emp_id,
         first_name,
